@@ -1,0 +1,57 @@
+name: Spleet
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform_dir: windows
+            artifact_name: spleet-windows
+            artifact_path: windows/dist/Spleet/**
+          - os: macos-latest
+            platform_dir: mac
+            artifact_name: spleet-macos
+            artifact_path: mac/dist/Spleet.app/**
+          - os: ubuntu-latest
+            platform_dir: linux
+            artifact_name: spleet-linux
+            artifact_path: linux/dist/Spleet/**
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: |
+            shared/requirements.txt
+            windows/requirements.txt
+            mac/requirements.txt
+            linux/requirements.txt
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip; python -m pip install -r ${{ matrix.platform_dir }}/requirements.txt
+
+      - name: Build with PyInstaller
+        working-directory: ${{ matrix.platform_dir }}
+        run: pyinstaller Spleet.spec --noconfirm
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_path }}
+          if-no-files-found: error

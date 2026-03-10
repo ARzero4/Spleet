@@ -1,0 +1,4 @@
+-r ../shared/requirements.txt
+
+# Build / packaging
+pyinstaller>=6.0
