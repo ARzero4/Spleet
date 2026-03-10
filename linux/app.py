@@ -6,10 +6,15 @@ import sys
 import os
 from pathlib import Path
 
-# Ensure project root is in sys.path so 'shared' is importable
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+# Ensure 'shared' is importable in both dev and frozen (PyInstaller) modes
+if getattr(sys, 'frozen', False):
+    _meipass_shared = os.path.join(getattr(sys, '_MEIPASS', ''), 'shared')
+    if os.path.isdir(_meipass_shared) and _meipass_shared not in sys.path:
+        sys.path.insert(0, _meipass_shared)
+else:
+    PROJECT_ROOT = Path(__file__).resolve().parents[1]
+    if str(PROJECT_ROOT) not in sys.path:
+        sys.path.insert(0, str(PROJECT_ROOT))
 from pathlib import Path
 
 
