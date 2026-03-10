@@ -1,4 +1,4 @@
-# Spleet — Offline Stem Splitter
+# Spleet 
 
 A lightweight desktop app that splits any audio or video file into individual stems (vocals, drums, bass, other) using [Demucs](https://github.com/facebookresearch/demucs). Runs **100 % offline** — no internet required after installation.
 
